@@ -21,6 +21,7 @@ define( 'FW_URL',        plugin_dir_url( __FILE__ ) );
 
 require_once FW_DIR . 'includes/class-fw-library.php';
 require_once FW_DIR . 'includes/class-fw-product-meta.php';
+require_once FW_DIR . 'includes/class-fw-pricing-engine.php';
 require_once FW_DIR . 'includes/class-fw-frontend.php';
 require_once FW_DIR . 'includes/class-fw-pricing.php';
 require_once __DIR__ . '/includes/class-fw-lengths-autosave.php';

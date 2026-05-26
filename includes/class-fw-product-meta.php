@@ -160,6 +160,41 @@ class FW_ProductMeta {
                         </div>
                     </div>
                 </div>
+                <?php elseif ( $group['type'] === 'depth' ) : ?>
+                <div class="fw-pm-vars" style="display:none">
+                    <div class="fw-pm-vars-inner">
+                        <label class="fw-pm-selall">
+                            <input type="checkbox"
+                                   class="fw-pm-select-all"
+                                   data-gid="<?php echo esc_attr( $gid ); ?>"
+                                   <?php checked( $saved_vars === 'all' || ! $is_active ); ?>>
+                            <strong>Alle standaardmaten tonen</strong>
+                        </label>
+                        <div class="fw-pm-var-list">
+                            <?php
+                            $depths = $group['variations'][0]['depths'] ?? [];
+                            foreach ( $depths as $vi => $v ) :
+                                $var_checked = $saved_vars === 'all'
+                                    || ! $is_active
+                                    || ( is_array( $saved_vars ) && in_array( $vi, $saved_vars, true ) );
+                            ?>
+                            <label class="fw-pm-var-item">
+                                <input type="checkbox"
+                                       class="fw-pm-var-check"
+                                       name="fw_groups[<?php echo esc_attr( $gid ); ?>][vars][]"
+                                       value="<?php echo esc_attr( $vi ); ?>"
+                                       <?php checked( $var_checked ); ?>>
+                                <span class="fw-pm-var-name"><?php echo esc_html( $v['value'] ); ?> mm</span>
+                                <?php if ( (float)( $v['percent'] ?? 0 ) > 0 ) : ?>
+                                    <em class="fw-pm-var-price">
+                                        + <?php echo number_format( (float)$v['percent'], 2, ',', '.' ); ?>%
+                                    </em>
+                                <?php endif; ?>
+                            </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
                 <?php elseif ( ! $is_text ) : ?>
                 <div class="fw-pm-vars" style="display:none">
                     <div class="fw-pm-vars-inner">

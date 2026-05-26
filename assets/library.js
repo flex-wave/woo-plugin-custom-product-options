@@ -130,4 +130,37 @@
     });
   }
 
+  // --- DIEPTE MODULE: toevoegen/verwijderen rijen ---
+  const depthTable = document.getElementById('fw-depth-table');
+  const addDepthBtn = document.getElementById('fw-add-depth');
+  if (depthTable && addDepthBtn) {
+    addDepthBtn.addEventListener('click', function () {
+      const tbody = depthTable.querySelector('tbody');
+      const rows = tbody.querySelectorAll('tr');
+      let idx = 0;
+      // Zoek hoogste index
+      rows.forEach(row => {
+        const input = row.querySelector('input[name^="fw_depth_depths["]');
+        if (input) {
+          const m = input.name.match(/fw_depth_depths\[(\d+)\]/);
+          if (m && parseInt(m[1]) > idx) idx = parseInt(m[1]);
+        }
+      });
+      idx++;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><label for="fw_depth_value_${idx}" class="screen-reader-text">Diepte waarde</label><input id="fw_depth_value_${idx}" type="number" name="fw_depth_depths[${idx}][value]" value="" step="0.1" min="0" style="width:100%"></td>
+        <td><label for="fw_depth_percent_${idx}" class="screen-reader-text">Diepte procent</label><input id="fw_depth_percent_${idx}" type="number" name="fw_depth_depths[${idx}][percent]" value="" step="0.01" min="0" style="width:100%"></td>
+        <td><button type="button" class="button fw-remove-depth" title="Verwijder">✕</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    depthTable.addEventListener('click', function(e) {
+      if (e.target.classList.contains('fw-remove-depth')) {
+        const row = e.target.closest('tr');
+        if (row) row.remove();
+      }
+    });
+  }
+
 })();

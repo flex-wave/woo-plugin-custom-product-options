@@ -81,6 +81,7 @@ class FW_Library {
                         <option value="length" <?php selected( $type, 'length' ); ?>>📏 Lengte</option>
                         <option value="width" <?php selected( $type, 'width' ); ?>>📐 Breedte</option>
                         <option value="dimensions" <?php selected( $type, 'dimensions' ); ?>>📏📐 Lengte + Breedte</option>
+                        <option value="depth" <?php selected( $type, 'depth' ); ?>>📏 Diepte</option>
                     </select>
                 </label>
                 <label>
@@ -104,14 +105,14 @@ class FW_Library {
                         </tr>
                     </thead>
                     <tbody id="fw-variations-body">
-                        <?php if ($type !== 'length') : ?>
+                        <?php if ($type !== 'length' && $type !== 'depth') : ?>
                         <?php foreach ( $variations as $i => $v ) : ?>
                             <?php self::render_variation_row( $i, $v, $type ); ?>
                         <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
                 </table>
-                <?php if ($type !== 'length') : ?>
+                <?php if ($type !== 'length' && $type !== 'depth') : ?>
                 <button type="button" id="fw-add-variation" class="button" style="margin-top:.6rem">
                     + Variatie toevoegen
                 </button>
@@ -153,8 +154,8 @@ class FW_Library {
                         if (empty($lengths)) $lengths = [['value'=>'','price'=>'']];
                         foreach ($lengths as $i => $row) : ?>
                         <tr>
-                            <td><input type="number" name="fw_length_lengths[<?php echo $i; ?>][value]" value="<?php echo esc_attr($row['value'] ?? ''); ?>" step="0.1" min="0" style="width:100%"></td>
-                            <td><input type="number" name="fw_length_lengths[<?php echo $i; ?>][price]" value="<?php echo esc_attr($row['price'] ?? ''); ?>" step="0.01" min="0" style="width:100%"></td>
+                            <td><label for="fw_length_value_<?php echo $i; ?>" class="screen-reader-text">Lengte waarde</label><input id="fw_length_value_<?php echo $i; ?>" type="number" name="fw_length_lengths[<?php echo $i; ?>][value]" value="<?php echo esc_attr($row['value'] ?? ''); ?>" step="0.1" min="0" style="width:100%"></td>
+                            <td><label for="fw_length_price_<?php echo $i; ?>" class="screen-reader-text">Lengte prijs</label><input id="fw_length_price_<?php echo $i; ?>" type="number" name="fw_length_lengths[<?php echo $i; ?>][price]" value="<?php echo esc_attr($row['price'] ?? ''); ?>" step="0.01" min="0" style="width:100%"></td>
                             <td><button type="button" class="button fw-remove-length" title="Verwijder">✕</button></td>
                         </tr>
                         <?php endforeach; ?>
@@ -177,110 +178,47 @@ class FW_Library {
                 </label>
             </div>
 
-            <!-- LENGTE/BREEDTE type uitleg -->
-            <div id="fw-dimension-wrap" class="<?php echo in_array($type, ['length','width','dimensions']) ? '' : 'fw-hidden'; ?>">
-                <?php if ($type === 'dimensions') : ?>
-                    <h4>Lengte &amp; Breedte optie instellingen</h4>
-                    <div style="margin-bottom:1em;">
-                        <strong>Lengte</strong><br>
-                        <label>Label
-                            <input type="text" name="fw_dimension_label_l" value="<?php echo esc_attr( $variations[0]['label'] ?? 'Lengte (cm)' ); ?>" style="width:180px">
-                        </label>
-                        &nbsp;
-                        <label>Min
-                            <input type="number" name="fw_dimension_min_l" step="0.01" min="0" value="<?php echo esc_attr( $variations[0]['min'] ?? '' ); ?>" style="width:80px">
-                        </label>
-                        &nbsp;
-                        <label>Max
-                            <input type="number" name="fw_dimension_max_l" step="0.01" min="0" value="<?php echo esc_attr( $variations[0]['max'] ?? '' ); ?>" style="width:80px">
-                        </label>
-                        &nbsp;
-                        <label>Stapgrootte
-                            <input type="number" name="fw_dimension_step_l" step="0.01" min="0.01" value="<?php echo esc_attr( $variations[0]['step'] ?? '1' ); ?>" style="width:80px">
-                        </label>
-                        &nbsp;
-                        <label>Meerprijs per eenheid (€)
-                            <input type="number" name="fw_dimension_price_l" step="0.01" min="0" value="<?php echo esc_attr( $variations[0]['price'] ?? '' ); ?>" style="width:120px">
-                        </label>
-                        &nbsp;
-                        <label>Placeholder
-                            <input type="text" name="fw_dimension_placeholder_l" value="<?php echo esc_attr( $variations[0]['placeholder'] ?? '' ); ?>" style="width:180px">
-                        </label>
-                        &nbsp;
-                        <label>Afbeelding
-                            <input type="hidden" name="fw_dimension_image_id_l" value="<?php echo esc_attr( $variations[0]['image_id'] ?? '' ); ?>" class="fw-dim-image-id">
-                            <input type="hidden" name="fw_dimension_image_url_l" value="<?php echo esc_attr( $variations[0]['image_url'] ?? '' ); ?>" class="fw-dim-image-url">
-                            <button type="button" class="button fw-upload-dim-img">📷</button>
-                            <?php if (!empty($variations[0]['image_url'])): ?>
-                                <img src="<?php echo esc_url($variations[0]['image_url']); ?>" style="max-width:60px;max-height:60px;vertical-align:middle;margin-left:8px;" alt="Lengte afbeelding">
-                                <button type="button" class="button-link-delete fw-remove-dim-img" style="margin-left:4px;">verwijder</button>
-                            <?php endif; ?>
-                        </label>
-                    </div>
-                    <div>
-                        <strong>Breedte</strong><br>
-                        <label>Label
-                            <input type="text" name="fw_dimension_label_b" value="<?php echo esc_attr( $variations[1]['label'] ?? 'Breedte (cm)' ); ?>" style="width:180px">
-                        </label>
-                        &nbsp;
-                        <label>Min
-                            <input type="number" name="fw_dimension_min_b" step="0.01" min="0" value="<?php echo esc_attr( $variations[1]['min'] ?? '' ); ?>" style="width:80px">
-                        </label>
-                        &nbsp;
-                        <label>Max
-                            <input type="number" name="fw_dimension_max_b" step="0.01" min="0" value="<?php echo esc_attr( $variations[1]['max'] ?? '' ); ?>" style="width:80px">
-                        </label>
-                        &nbsp;
-                        <label>Stapgrootte
-                            <input type="number" name="fw_dimension_step_b" step="0.01" min="0.01" value="<?php echo esc_attr( $variations[1]['step'] ?? '1' ); ?>" style="width:80px">
-                        </label>
-                        &nbsp;
-                        <label>Meerprijs per eenheid (€)
-                            <input type="number" name="fw_dimension_price_b" step="0.01" min="0" value="<?php echo esc_attr( $variations[1]['price'] ?? '' ); ?>" style="width:120px">
-                        </label>
-                        &nbsp;
-                        <label>Placeholder
-                            <input type="text" name="fw_dimension_placeholder_b" value="<?php echo esc_attr( $variations[1]['placeholder'] ?? '' ); ?>" style="width:180px">
-                        </label>
-                        &nbsp;
-                        <label>Afbeelding
-                            <input type="hidden" name="fw_dimension_image_id_b" value="<?php echo esc_attr( $variations[1]['image_id'] ?? '' ); ?>" class="fw-dim-image-id">
-                            <input type="hidden" name="fw_dimension_image_url_b" value="<?php echo esc_attr( $variations[1]['image_url'] ?? '' ); ?>" class="fw-dim-image-url">
-                            <button type="button" class="button fw-upload-dim-img">📷</button>
-                            <?php if (!empty($variations[1]['image_url'])): ?>
-                                <img src="<?php echo esc_url($variations[1]['image_url']); ?>" style="max-width:60px;max-height:60px;vertical-align:middle;margin-left:8px;" alt="Breedte afbeelding">
-                                <button type="button" class="button-link-delete fw-remove-dim-img" style="margin-left:4px;">verwijder</button>
-                            <?php endif; ?>
-                        </label>
-                    </div>
-                <?php else : ?>
-                    <h4><?php echo $type === 'length' ? 'Lengte' : 'Breedte'; ?> optie instellingen</h4>
-                    <label>Label
-                        <input type="text" name="fw_dimension_label" value="<?php echo esc_attr( $variations[0]['label'] ?? ($type === 'length' ? 'Lengte (cm)' : 'Breedte (cm)') ); ?>" style="width:180px">
-                    </label>
-                    &nbsp;
-                    <label>Min
-                        <input type="number" name="fw_dimension_min" step="0.01" min="0" value="<?php echo esc_attr( $variations[0]['min'] ?? '' ); ?>" style="width:80px">
-                    </label>
-                    &nbsp;
-                    <label>Max
-                        <input type="number" name="fw_dimension_max" step="0.01" min="0" value="<?php echo esc_attr( $variations[0]['max'] ?? '' ); ?>" style="width:80px">
-                    </label>
-                    &nbsp;
-                    <label>Stapgrootte
-                        <input type="number" name="fw_dimension_step" step="0.01" min="0.01" value="<?php echo esc_attr( $variations[0]['step'] ?? '1' ); ?>" style="width:80px">
-                    </label>
-                    &nbsp;
-                    <label>Meerprijs per eenheid (€)
-                        <input type="number" name="fw_dimension_price" step="0.01" min="0" value="<?php echo esc_attr( $variations[0]['price'] ?? '' ); ?>" style="width:120px">
-                    </label>
-                    &nbsp;
-                    <label>Placeholder
-                        <input type="text" name="fw_dimension_placeholder" value="<?php echo esc_attr( $variations[0]['placeholder'] ?? '' ); ?>" style="width:180px">
-                    </label>
-                <?php endif; ?>
+            <!-- DIEPTE type uitleg -->
+            <div id="fw-depth-wrap" class="<?php echo $type !== 'depth' ? 'fw-hidden' : ''; ?>">
+                <h4>Diepte optie instellingen</h4>
+                <table id="fw-depth-table" class="widefat striped" style="max-width:500px">
+                    <thead>
+                        <tr>
+                            <th style="width:120px">Standaardmaat (mm)</th>
+                            <th style="width:120px">Prijs (%)</th>
+                            <th style="width:40px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $depths = $variations[0]['depths'] ?? [];
+                        if (!is_array($depths)) $depths = [];
+                        if (empty($depths)) $depths = [['value'=>'','percent'=>'']];
+                        foreach ($depths as $i => $row) : ?>
+                        <tr>
+                            <td><label for="fw_depth_value_<?php echo $i; ?>" class="screen-reader-text">Diepte waarde</label><input id="fw_depth_value_<?php echo $i; ?>" type="number" name="fw_depth_depths[<?php echo $i; ?>][value]" value="<?php echo esc_attr($row['value'] ?? ''); ?>" step="0.1" min="0" style="width:100%"></td>
+                            <td><label for="fw_depth_percent_<?php echo $i; ?>" class="screen-reader-text">Diepte procent</label><input id="fw_depth_percent_<?php echo $i; ?>" type="number" name="fw_depth_depths[<?php echo $i; ?>][percent]" value="<?php echo esc_attr($row['percent'] ?? ''); ?>" step="0.01" min="0" style="width:100%"></td>
+                            <td><button type="button" class="button fw-remove-depth" title="Verwijder">✕</button></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <button type="button" id="fw-add-depth" class="button">+ Maat toevoegen</button>
+                <br><br>
+                <label><input type="checkbox" name="fw_depth_custom" value="1" <?php checked($variations[0]['depth_custom'] ?? '', '1'); ?>> Maatwerk diepte toestaan</label>
+                &nbsp;
+                <label>Stapgrootte maatwerk (mm)
+                    <input type="number" name="fw_depth_step" value="<?php echo esc_attr($variations[0]['depth_step'] ?? '1'); ?>" min="0.1" step="0.1" style="width:80px">
+                </label>
+                &nbsp;
+                <label>Min maatwerk (mm, leeg = kleinste maat)
+                    <input type="number" name="fw_depth_min" value="<?php echo esc_attr($variations[0]['depth_min'] ?? ''); ?>" min="0" step="0.1" style="width:80px">
+                </label>
+                &nbsp;
+                <label>Max maatwerk (mm, leeg = grootste maat)
+                    <input type="number" name="fw_depth_max" value="<?php echo esc_attr($variations[0]['depth_max'] ?? ''); ?>" min="0" step="0.1" style="width:80px">
+                </label>
             </div>
-
         </div><!-- #fw-lib-wrap -->
 
         <script type="text/template" id="fw-var-row-tpl">
@@ -404,6 +342,26 @@ class FW_Library {
                     'image_url'   => esc_url_raw( $_POST["fw_dimension_image_url_{$prefix}"] ?? '' ),
                 ];
             }
+        } elseif ( $type === 'depth' ) {
+            $depths  = [];
+            $raw      = $_POST['fw_depth_depths'] ?? [];
+            foreach ( $raw as $v ) {
+                $value = floatval( $v['value'] ?? 0 );
+                if ( $value === 0 ) continue;
+                $percent = floatval( $v['percent'] ?? 0 );
+                $depths[] = [ 'value' => $value, 'percent' => $percent ];
+            }
+            $custom  = isset( $_POST['fw_depth_custom'] ) ? '1' : '';
+            $min     = floatval( $_POST['fw_depth_min'] ?? 0 );
+            $max     = floatval( $_POST['fw_depth_max'] ?? 0 );
+            $step    = floatval( $_POST['fw_depth_step'] ?? 1 );
+            $variations = [ [
+                'depths'      => $depths,
+                'depth_custom' => $custom,
+                'depth_min'    => $min,
+                'depth_max'    => $max,
+                'depth_step'   => $step,
+            ] ];
         } else {
             $raw        = $_POST['fw_variations'] ?? [];
             $variations = [];
