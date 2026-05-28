@@ -54,7 +54,11 @@ class FW_Depths_Frontend {
         foreach ($settings['depths'] as $i => $depth) {
             $percent = $settings['percents'][$i];
             $cm = self::format_cm($depth);
-            echo '<option value="vast_' . esc_attr($depth) . '">' . esc_html($cm) . ' cm (+' . $percent . '%)</option>';
+            if ($percent == 0) {
+                echo '<option value="vast_' . esc_attr($depth) . '">' . esc_html($cm) . ' cm</option>';
+            } else {
+                echo '<option value="vast_' . esc_attr($depth) . '">' . esc_html($cm) . ' cm (+' . $percent . 'procent)</option>';
+            }
         }
         if ($settings['allow_custom']) {
             echo '<option value="maatwerk">' . __('Maatwerk diepte', 'fw') . '</option>';

@@ -156,11 +156,20 @@ class FW_Frontend {
 						<?php
 						$cm_val = floatval( $row['value'] ) / 10;
 						$pct    = floatval( $row['percent'] ?? 0 );
-						printf(
-							'%s cm (%s%%)',
-							esc_html( fmod( $cm_val, 1 ) == 0 ? number_format( $cm_val, 0, ',', '' ) : number_format( $cm_val, 1, ',', '' ) ),
-							esc_html( number_format( $pct, 1, ',', '.' ) )
-						);
+
+
+                        if ($pct == 0) {
+                            printf(
+                                '%s cm',
+                                esc_html( fmod( $cm_val, 1 ) == 0 ? number_format( $cm_val, 0, ',', '' ) : number_format( $cm_val, 1, ',', '' ) )
+                            );
+                        } else {
+                            printf(
+                                '%s cm (+%s procent)',
+                                esc_html( fmod( $cm_val, 1 ) == 0 ? number_format( $cm_val, 0, ',', '' ) : number_format( $cm_val, 1, ',', '' ) ),
+                                esc_html( number_format( $pct, 1, ',', '.' ) )
+                            );
+                        }
 						?>
 					</option>
 				<?php endforeach; ?>
@@ -386,11 +395,20 @@ class FW_Frontend {
 							data-length="<?php echo esc_attr( $row['value'] ); ?>">
 						<?php
 						$cm_val = floatval( $row['value'] ) / 10;
-						printf(
-							'%s cm (+%s)',
-							esc_html( fmod( $cm_val, 1 ) == 0 ? number_format( $cm_val, 0, ',', '' ) : number_format( $cm_val, 1, ',', '' ) ),
-							wp_strip_all_tags( wc_price( $row['price'] ?? 0 ) )
-						);
+						$price = floatval( $row['price'] ?? 0 );
+						if ( $price > 0 ) {
+							printf(
+								'%s cm (+%s%s)',
+								esc_html( fmod( $cm_val, 1 ) == 0 ? number_format( $cm_val, 0, ',', '' ) : number_format( $cm_val, 1, ',', '' ) ),
+								esc_html( get_woocommerce_currency_symbol() ),
+								esc_html( number_format( $price, 2, ',', '.' ) )
+							);
+						} else {
+							printf(
+								'%s cm',
+								esc_html( fmod( $cm_val, 1 ) == 0 ? number_format( $cm_val, 0, ',', '' ) : number_format( $cm_val, 1, ',', '' ) )
+							);
+						}
 						?>
 					</option>
 				<?php endforeach; ?>

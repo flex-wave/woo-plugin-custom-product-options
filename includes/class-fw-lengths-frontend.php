@@ -53,7 +53,11 @@ class FW_Lengths_Frontend {
         foreach ($settings['lengths'] as $i => $len) {
             $price = wc_price($settings['prices'][$i]);
             $cm = self::format_cm($len);
-            echo '<option value="vast_' . esc_attr($len) . '">' . esc_html($cm) . ' cm (' . $price . ')</option>';
+            if ($price == wc_price(0)) {
+                echo '<option value="vast_' . esc_attr($len) . '">' . esc_html($cm) . ' cm</option>';
+            } else {
+                echo '<option value="vast_' . esc_attr($len) . '">' . esc_html($cm) . ' cm (' . $price . ')</option>';
+            }
         }
         if ($settings['allow_custom']) {
             echo '<option value="maatwerk">' . __('Maatwerk lengte', 'fw') . '</option>';
